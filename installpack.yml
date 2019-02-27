@@ -1,0 +1,19 @@
+---
+- name: Update package only if already installed
+  hosts: all
+  sudo: yes
+  tasks:
+    - name: Check if Package is installed
+      shell: dpkg-query -W -f='${Status}'  winrm  | grep 'install ok installed'
+      register: is_installed
+      failed_when: no
+      changed_when: no
+
+    - name: Update Package only if installed
+      apt:
+        name: winrm
+        state: latest
+        update_cache: yes
+      when: is_installed.rc == 0
+
+
